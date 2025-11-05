@@ -1,0 +1,26 @@
+#!/usr/bin/env python3
+import rclpy 
+from rclpy.node import Node
+
+class MyNode(Node):
+
+    def __init__(self):
+        super().__init__("py_test_oop")
+        self.counter_ = 0
+        self.get_logger().info("Hello word")
+        self.create_timer(1.0, self.timer_callback)
+
+    def timer_callback(self):
+        self.get_logger().info(f"Hello - 'counter': {self.counter_}")
+        self.counter_ += 1
+    
+
+def main(args=None):
+    rclpy.init(args=args)
+    my_node = MyNode()
+    rclpy.spin(my_node)
+    rclpy.shutdown()
+
+
+if __name__ == "__main__":
+    main()
