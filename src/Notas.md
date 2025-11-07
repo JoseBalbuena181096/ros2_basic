@@ -655,3 +655,291 @@ __________________________________
 
 
 Download the complete code for this section (this is the code from all previous sections + the current one).
+
+## Intro
+ROS 2 interfaces are the messages and services you use with your topics and services.
+
+For now you’ve only used existing interfaces so you could focus on learning how topics and services work.
+
+Now, it’s time to learn how to use your own message/service types!
+
+At the end of this section you’ll be able to:
+
+Create and build your own interfaces with msg and srv definitions
+
+Use those interfaces with your topics and services
+
+You will also do a complete activity to work on nodes, topics, services, and custom interfaces.
+
+But first, let’s see what ROS 2 interfaces are.
+
+## ROS2 Interfaces
+- ROS 2 interfaces are the messages and services you use with your topics and services.
+
+![alt text](imgs/image_14.png)
+- You can create your own interfaces (messages and services) if the existing ones don’t fit your needs.
+- Messages are used with topics, and services with service servers/clients.
+- Messages are defined in .msg files, and services in .srv files.
+- You create those files inside a ROS 2 package, in the msg/ and srv/ folders respectively.
+- You then build the package, and source your environment to use the new interfaces.    
+- You can then import those interfaces in your nodes, and use them with your topics and services.
+![alt text](image.png)
+- Messages and services can contain primitive types (int, float, string, etc.) as well as other messages.
+- You can also create arrays of primitive types or messages.
+- Once created, interfaces can be used by any package that depends on the package containing the interfaces.
+- Interfaces can be created in both Python and Cpp packages.
+
+![alt text](image.png)
+
+## interface existing types
+- Use primitive types to create a message definition.
+- You can create a message definition using another message definition.
+
+Example package interfaces:
+- example_interfaces
+- sensoor_msgs
+- nav_msgs
+- geometry_msgs
+- std_msgs
+- ...
+
+View github example_interfaces repo:
+https://github.com/ros2/example_interfaces
+
+Sensor messages repo:
+- JointState.msg
+- Joy.msg
+- PointCloud2.msg
+- etc.
+
+Geometry messages repo:
+- Pose.msg
+- Twist.msg
+- Vector3.msg
+- etc.
+
+Std srvs repo:
+- Empty.srv
+- SetBool.srv
+- Trigger.srv
+- etc.
+
+
+## Create a custom message
+Create a new package on ros2_ws/src
+```bash
+ros2 pkg create my_robot_interfaces  
+```
+
+remove include and src folders
+```bash
+cd my_robot_interfaces
+rm -r include/ src/ 
+```
+
+Add in package.xml of the package:
+```xml
+<buildtool_depend>rosidl_default_generators</buildtool_depend>
+<exec_depend>rosidl_default_runtime</exec_depend>
+<member_of_group>rosidl_interface_packages</member_of_group>
+```
+
+Full example of package.xml after modification:
+
+```xml
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>my_robot_interfaces</name>
+  <version>0.0.0</version>
+  <description>TODO: Package description</description>
+  <maintainer email="josebalbuena181096@gmail.com">jose</maintainer>
+  <license>TODO: License declaration</license>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+
+  <buildtool_depend>rosidl_default_generators</buildtool_depend>
+  <exec_depend>rosidl_default_runtime</exec_depend>
+  <member_of_group>rosidl_interface_packages</member_of_group>
+
+  <test_depend>ament_lint_auto</test_depend>
+  <test_depend>ament_lint_common</test_depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>
+
+```
+
+Add in CMakeLists.txt of the package:
+
+```cmake
+find_package(rosidl_default_generators REQUIRED)
+
+rosidl_generate_interfaces(${PROJECT_NAME}
+  "your custom interfaces will be here"
+  "one per line"
+  "no comma for separatting lines"
+)
+
+ament_export_dependencies(rosidl_default_runtime)
+```
+full example of CMakeLists.txt after modification:
+
+```cmake
+cmake_minimum_required(VERSION 3.8)
+project(my_robot_interfaces)
+
+if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+  add_compile_options(-Wall -Wextra -Wpedantic)
+endif()
+
+# find dependencies
+find_package(ament_cmake REQUIRED)
+find_package(rosidl_default_generators REQUIRED)
+
+rosidl_generate_interfaces(${PROJECT_NAME}
+  "your custom interfaces will be here"
+  "one per line"
+  "no comma for separatting lines"
+)
+
+ament_export_dependencies(rosidl_default_runtime)
+
+ament_package()
+
+```
+
+Create msg  folders in the package  /ros2_ws/src/my_robot_interfaces
+```bash
+mkdir msg 
+```
+
+Create the file HardwareStatus.msg
+```bash
+cd msg
+touch HardwareStatus.msg
+```
+
+Define the message inside HardwareStatus.msg
+```plaintext
+float64 temperature
+bool are_motors_ready
+string debug_message
+```
+
+On CMakeLists.txt add the new message
+```cmake
+rosidl_generate_interfaces(${PROJECT_NAME}
+  "msg/HardwareStatus.msg"
+)
+```
+
+Build the package
+```bash
+cd ~/ros2_ws
+colcon build --packages-select my_robot_interfaces
+```
+
+Source the environment
+```bash
+source install/setup.bash
+```
+
+See the new interface
+```bash
+ros2 interface show my_robot_interfaces/msg/HardwareStatus
+```
+
+## Create a custom node using the custom message
+Create a new package for the node
+```bash
+touch hardware_status_publisher.py
+```
+
+Otorize the file
+```bash
+chmod +x hardware_status_publisher.py
+```
+
+Create the cpp node on ros2_ws/src/my_cpp_pkg/src
+```bash 
+touch hardware_status_publisher.cpp
+```
+
+if cpp no found header of the custom message inside .vscode/c_cpp_properties.json
+```json
+"includePath": [
+        "/opt/ros/jazzy/include/**",
+        "/usr/include/**",
+        "/home/jose/ros2_ws/install/my_robot_interfaces/include/**",
+      ],
+```
+## Create a custom service
+Create srv folder in the package /ros2_ws/src/my_robot_interfaces
+```bash
+mkdir srv
+```
+
+Create the file ComputeRectangleArea.srv
+```bash
+cd srv
+touch ComputeRectangleArea.srv
+```
+
+Define the service inside ComputeRectangleArea.srv
+```plaintext
+float64 length
+float64 width
+---
+float64 area
+```
+
+ Add in CMakeLists.txt of the package:
+```cmake
+rosidl_generate_interfaces(${PROJECT_NAME}
+  "msg/HardwareStatus.msg"
+  "srv/ComputeRectangleArea.srv"
+)
+```
+
+Build the package
+```bash
+cd ~/ros2_ws
+colcon build --packages-select my_robot_interfaces --allow-overriding my_robot_interfaces
+``` 
+
+source the environment
+```bash
+source install/setup.bash
+```
+
+## Introspect the new service with command line
+```bash
+ros2 interface show my_robot_interfaces/srv/ComputeRectangleArea
+```
+```plaintext
+float64 length
+float64 width
+---     
+float64 area
+```
+See the list of interfaces
+```bash
+ros2 interface list 
+```
+See nterfaces in the package
+```bash
+ros2 interface package my_robot_interfaces
+```
+
+Info about node hardware_status_publisher
+```bash
+ros2 node info /hardware_status_publisher
+```
+
+type of the service
+```bash
+ros2 service type /compute_rectangle_area
+```
