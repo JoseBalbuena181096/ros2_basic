@@ -8,7 +8,8 @@
       "includePath": [
         "/opt/ros/jazzy/include/**",
         "/usr/include/**",
-        "/home/jose/ros2_ws/install/my_robot_interfaces/include/**"
+        "/home/jose/ros2_ws/install/my_robot_interfaces/include/**",
+        "/home/jose/ros2_ws/install/batery_led_interfaces/include/**"
       ],
       "name": "ros2",
       "intelliSenseMode": "gcc-x64",

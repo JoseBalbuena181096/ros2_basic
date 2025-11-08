@@ -424,7 +424,6 @@ Create packages Cpp second
 ## Ros2 bags
 ```bash
 ros2 bag record -o test /number_count
-
 ```
 Check info of the bag
 ```bash
@@ -943,3 +942,251 @@ type of the service
 ```bash
 ros2 service type /compute_rectangle_area
 ```
+
+
+## Activity 04 - ROS 2 Custom Interfaces
+In this activity you will implement the battery + led panel example that we used to understand Services in the previous section. When the battery is empty we power on a LED, and when the battery is full we power it off.
+
+So, here’s the initial state:
+![alt text](imgs/image_17.png)
+
+
+Blue boxes are for nodes, orange for services, and green for topics.
+
+You can simply represent the state of the battery by a “battery_state” variable inside the battery node, and the LED panel by an integer array, inside the LED panel node.
+
+At first, the battery is full, and all the LEDs are powered off ([0, 0, 0]).
+
+Now, you will fake the battery state evolution. Let’s say that the battery is empty after 4 seconds, and then after 6 more seconds it’s full again. And so on.
+
+When the battery is empty, the battery node will send a request to the LED panel, to power on one LED.
+![alt text](imgs/image_18.png)
+
+And, 6 seconds later, when the battery is full again, it will send another request to power off the LED.
+
+![alt text](imgs/image_19.png)
+
+And you can continue looping between those 2 states indefinitely (until you press CTRL+C).
+
+You will have to create:
+
+1 node for the battery
+
+1 node for the LED panel
+
+A custom msg definition for the “led_panel_state” topic
+
+A custom srv definition for the “set_led” service
+
+This activity really sums up everything you’ve seen before. If you skipped some of the previous activities, don’t skip that one!
+
+Of course there is not only one solution. You may succeed with a different code that the one I will provide.
+
+And, as usual, I’ll see you in the next lecture for the solution. For more clarity and to help you navigate easily between the steps, I will separate the solution in 3 videos:
+
+Step 1: create LED panel node and publish the LED panel state (with a custom message)
+
+Step 2: add a service server inside the LED panel node (with a custom service definition)
+
+Step 3: create the battery node, simulate the battery life, and call the “set_led” service with a service client
+
+## Solution - Activity 04 - ROS 2 Custom Interfaces
+
+Create the package for interfaces ros2_ws/src
+```bash
+ros2 pkg create batery_led_interfaces
+```
+
+remove include and src folders
+```bash
+cd batery_led_interfaces
+rm -r include/ src/ 
+```
+
+Add in package.xml of the package:
+```xml
+<buildtool_depend>rosidl_default_generators</buildtool_depend>
+<exec_depend>rosidl_default_runtime</exec_depend>
+<member_of_group>rosidl_interface_packages</member_of_group>
+```
+
+Full example of package.xml after modification:
+
+```xml
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>my_robot_interfaces</name>
+  <version>0.0.0</version>
+  <description>TODO: Package description</description>
+  <maintainer email="josebalbuena181096@gmail.com">jose</maintainer>
+  <license>TODO: License declaration</license>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+
+  <buildtool_depend>rosidl_default_generators</buildtool_depend>
+  <exec_depend>rosidl_default_runtime</exec_depend>
+  <member_of_group>rosidl_interface_packages</member_of_group>
+
+  <test_depend>ament_lint_auto</test_depend>
+  <test_depend>ament_lint_common</test_depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>
+
+```
+
+Add in CMakeLists.txt of the package:
+
+```cmake
+find_package(rosidl_default_generators REQUIRED)
+
+rosidl_generate_interfaces(${PROJECT_NAME}
+  "your custom interfaces will be here"
+  "one per line"
+  "no comma for separatting lines"
+)
+
+ament_export_dependencies(rosidl_default_runtime)
+```
+full example of CMakeLists.txt after modification:
+
+```cmake
+cmake_minimum_required(VERSION 3.8)
+project(my_robot_interfaces)
+
+if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+  add_compile_options(-Wall -Wextra -Wpedantic)
+endif()
+
+# find dependencies
+find_package(ament_cmake REQUIRED)
+find_package(rosidl_default_generators REQUIRED)
+
+rosidl_generate_interfaces(${PROJECT_NAME}
+  "your custom interfaces will be here"
+  "one per line"
+  "no comma for separatting lines"
+)
+
+ament_export_dependencies(rosidl_default_runtime)
+
+ament_package()
+
+```
+
+Create msg  folders in the package  /ros2_ws/src/my_robot_interfaces
+```bash
+mkdir msg 
+```
+
+Create the file HardwareStatus.msg
+```bash
+cd msg
+touch LedPanelState.msg
+```
+
+Define the message inside LedPanelState.msg
+
+```plaintext
+# State of the LED panel array of the three LEDs with 1/0
+bool[] led_panel_state
+```
+
+On CMakeLists.txt add the new message
+```cmake
+rosidl_generate_interfaces(${PROJECT_NAME}
+  "msg/LedPanelState.msg"
+)
+```
+
+Build the package
+```bash
+cd ~/ros2_ws
+colcon build --packages-select batery_led_interfaces
+```
+Source the environment
+```bash   
+source install/setup.bash
+```
+See the new interface
+```bash
+ros2 interface show batery_led_interfaces/msg/LedPanelState
+```
+```plaintext
+bool[] led_panel_state
+```
+
+## Create a custom service set_led
+Create srv folder in the package /ros2_ws/src/batery_led_interfaces
+```bash
+mkdir srv
+```
+
+Create the file SetLed.srv
+```bash
+cd srv
+touch SetLed.srv
+```
+
+Define the service inside SetLed.srv
+```plaintext
+int32 led_index
+bool turn_state
+---
+bool success
+```plaintext
+int32 led_index
+bool turn_state
+---
+bool success
+```
+
+ Add in CMakeLists.txt of the package:
+```cmake
+rosidl_generate_interfaces(${PROJECT_NAME}
+  "msg/LedPanelState.msg"
+  "srv/SetLed.srv"
+)
+```
+
+Build the package
+```bash
+cd ~/ros2_ws
+colcon build --packages-select batery_led_interfaces --allow-overriding batery_led_interfaces
+``` 
+
+source the environment
+```bash
+source install/setup.bash
+```
+
+## Introspect the new service with command line
+```bash
+ros2 interface show batery_led_interfaces/srv/SetLed
+```
+```plaintext
+int32 led_index
+bool turn_state
+---
+bool success
+```
+
+# Create  node batery
+Create a new package for the node en c++ in ros2_ws/src
+```bash
+ros2 pkg create battery_led_pkg --build-type ament_cmake --dependencies rclcpp batery_led_interfaces
+```
+
+
+Create the cpp node on ros2_ws/src/battery_led_pkg/src
+```bash 
+touch battery_node.cpp
+``` 
+
+Test server from command line
+```bash
+ros2 service call /set_led batery_led_interfaces/srv/SetLed "{led_index: 1, turn_state: true}"
+``` 
