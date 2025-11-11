@@ -1,0 +1,12 @@
+/number_publisher1:
+  ros__parameters:
+    number: 42
+    timer_period: 0.1
+
+
+/number_publisher2:
+  ros__parameters:
+    number: 233
+    timer_period: 0.1
+
+

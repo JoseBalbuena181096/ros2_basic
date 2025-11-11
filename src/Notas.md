@@ -1190,3 +1190,194 @@ Test server from command line
 ```bash
 ros2 service call /set_led batery_led_interfaces/srv/SetLed "{led_index: 1, turn_state: true}"
 ``` 
+
+## Intro
+If you read this, well, you’ve already made huge progress! The hardest is behind, now just a few more things and you’ll be ready to write your own complete ROS 2 application.
+
+In this quick section we’ll focus on ROS 2 parameters.
+
+Parameters will allow you to provide run-time settings for your nodes.
+
+At the end of this section you will know:
+
+What ROS2 parameters are and when to use them.
+
+How to declare and get parameters for your nodes.
+
+How to store your parameters inside a YAML file
+
+Bonus: parameter callbacks
+
+### What is a ROS2 Parameter?
+You can think of a parameter as a configuration setting for your node. It allows you to change the behavior of your node without changing the code. For example, you can use a parameter to set the speed of a robot, the frequency of a sensor, or the name of a topic.
+
+
+![alt text](imgs/image_20.png)
+
+![alt text](imgs/image_21.png)
+
+Settings for ypur nodes, value set at run time
+- A parameter us specific to a node
+- ROS2 parameter type:
+- Boolean
+- Int
+- Double
+- String
+- List
+
+Pass parameters on execution
+```bash
+ros2 run my_py_pkg my_node --ros-args -p my_param:=value
+```
+
+Exmple with the my_first_activity_py_pkg package number_publisher node set a new parameter called publish_number with value 3 an timer with 0.5 
+```bash
+ros2 run my_first_activity_py_pkg number_publisher --ros-args -p number:=3 -p timer_period:=0.5
+```
+
+Example with the my_first_activity_cpp_pkg package number_publisher node set a new parameter called publish_number with value 3 an timer with 0.5 
+```bash
+ros2 run my_first_activity_cpp_pkg number_publisher --ros-args -p number:=3 -p timer_period:=0.5
+```
+
+## TurttleSim with parameters
+Run the turtlesim node with a parameter 
+
+see parameters of a nodes
+```bash
+ros2 param list
+```
+
+Get the value of a parameter called background_g, that controls the green component of the background color
+```bash
+ros2 param get /turtlesim background_g
+```
+
+Set the value of a parameter called background_g, that controls the green component of the background color
+```bash
+ros2 param set /turtlesim background_g 200
+```
+
+Set the value of a parameter called background when launch the node
+```bash
+ros2 run turtlesim turtlesim_node --ros-args -p background_r:=100 -p background_g:=150 -p background_b:=200
+```
+
+## Introspect parameters with command line
+```bash
+ros2 service type /turtlesim/list_parameters
+```
+```bash
+ros2 interface show rcl_interfaces/srv/ListParameters
+```
+```plaintext
+string[] prefixes
+uint32 depth
+---
+string[] names
+```
+
+## Store parameters in a YAML file
+Create a folder config in the package my_first_activity_py_pkg
+```bash
+mkdir ~/ros2_ws/src/my_first_activity_py_pkg/config
+```
+Create a file params.yaml in the folder config
+```bash
+cd ~/ros2_ws/src/my_first_activity_py_pkg/config
+touch params.yaml
+```
+Define the parameters inside params.yaml
+```yaml
+number_publisher:
+  ros__parameters:
+    number: 7
+    timer_period: 1.0
+``` 
+Run the node with the parameters from the YAML file
+```bash
+ros2 run my_first_activity_py_pkg number_publisher --ros-args --params-file /home/jose/ros2_ws/src/my_first_activity_py_pkg/yaml_params/number_params.yaml
+```
+
+check the hz of the topic
+```bash
+ros2 topic hz /number
+```
+
+```bash
+ros2 run my_first_activity_cpp_pkg number_publisher __node:=number_publisher2 --ros-args --params-file /home/jose/ros2_ws/src/my_first_activity_py_pkg/yaml_params/number_params.yaml
+```
+
+## Activity 05 - ROS 2 Parameters
+Let’s practice a little bit more with Parameters.
+
+Here are 2 quick activities:
+
+1. Do you remember one of the first nodes we created in the Topic section, with the robot news radio? This node publishes a string on a topic, similar to this “Hi, this is R2D2 from the Robot News Station!”.
+
+Now, it would be better if we could set the robot’s name at run time, so we can launch the node multiple times with different robot names.
+
+Add a “robot_name” parameter, and use the value to publish the string on the “robot_news” topic. Your string template (“Hi, this is <robot_name> from the Robot News Station!”) will now use the name you set at runtime.
+
+
+2. Go back to the “led_panel_node”. Here you have an int array representing the states of your Leds (0 for powered off, 1 for powered on). Set this array with a parameter named “led_states”.
+
+Then, create a YAML file to store this parameter and load it at runtime, when you start the node.
+
+-----
+This will make you practice on string and array parameters. Of course you can apply those changes in both the Python and Cpp nodes.
+
+I’ll see you in the next lecture for the solution (2 parts).
+
+
+## Solution - Activity 05 - ROS 2 Parameters
+
+```bash
+ros2 run my_py_pkg robot_news_station --ros-args -p robot_name:=jose
+```
+
+Led panel passing array parameter from command line
+```bash
+ros2 run battery_led_pkg led_node_panel --ros-args -p led_panel_state:="[true, false, true]"
+``` 
+
+
+Led panel passing array parameter from yaml file
+```bash
+ros2 run battery_led_pkg led_node_panel --ros-args --params-file /home/jose/ros2_ws/src/battery_led_pkg/yaml_params/leds_params.yaml
+```
+
+
+## Section Conclusion
+In this section you have discovered ROS 2 parameters.
+
+With parameters you don’t need to modify + re-compile your code for each different set of configuration. Just write your code once, and choose your settings at run-time.
+
+Using parameters is one of the first steps to make your application more scalable.
+
+![alt text](imgs/image_22.png)
+
+
+To handle parameters:
+
+Don’t forget to declare any parameter before you even try to use it.
+
+The default value’s data type will be the data type for the parameter.
+
+When you start your node, set values for your parameters (if you don’t, default values will be used).
+
+In your node’s code, get the parameters’ values and use them.
+
+You can also store many parameters for one or several nodes, inside a YAML param file. Then, all you need to do is load the YAML file when you start the nodes.
+
+
+
+---
+
+
+
+Download the complete code for this section (this is the code from all previous sections + the current one).
+
+Now that you can set parameters for your nodes, you might wonder: what if I have to run multiple nodes, each with multiple parameters? It would quickly become really long (and error prone) to always start everything from the terminal. YAML files already help, but there’s more.
+
+In the next section we’ll see how to solve that problem with launch files

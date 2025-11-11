@@ -10,6 +10,9 @@ class LedNodePanel : public rclcpp::Node
 public:
     LedNodePanel() : Node("led_node_panel"), led_panel_state_{false, false, false}
     {
+        this->declare_parameter("led_panel_state", std::vector<bool>{false, false, false});
+        this->led_panel_state_ = this->get_parameter("led_panel_state").as_bool_array();
+
         // Crear el servicio para manejar las solicitudes de encendido/apagado de LEDs          
         server_ = this->create_service<batery_led_interfaces::srv::SetLed>(
             "set_led",
