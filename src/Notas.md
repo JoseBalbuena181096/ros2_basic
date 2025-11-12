@@ -1381,3 +1381,64 @@ Download the complete code for this section (this is the code from all previous 
 Now that you can set parameters for your nodes, you might wonder: what if I have to run multiple nodes, each with multiple parameters? It would quickly become really long (and error prone) to always start everything from the terminal. YAML files already help, but there’s more.
 
 In the next section we’ll see how to solve that problem with launch files
+
+##Intro
+So, you now have many nodes in your packages. When you start them, you can rename them, rename the topics, services, and set parameters.
+
+That’s a lot of things! Now, imagine you have to start 10 nodes, each with a different configuration. Using the terminal is not something that scales well.
+
+In this section we’ll see how to solve that problem with launch files.
+
+At the end of this section you will be able to start all your nodes and parameters from one single ROS 2 Launch File.
+
+What you’ll do in this section:
+
+Understand what launch files are and when to use them.
+
+How to create, install, and start a launch file.
+
+Install YAML files and load them inside your launch files.
+
+Discover how to start your nodes inside namespaces.
+
+And practice more on your one with another activity.
+## What is a ROS2 Launch File?
+You can think of a launch file as a script that starts your nodes, with all the configuration you need (node names, topic/service remapping, parameters, etc.).
+
+
+
+![alt text](imgs/image_23.png)
+
+
+
+## Create a launch file
+Create a package for the launch file on src
+```bash
+ros2 pkg create my_robot_bringup 
+```
+Remove include and src folders
+```bash
+cd my_robot_bringup
+rm -r include/ src/ 
+```
+Craete a folder launch in the package
+```bash
+mkdir launch
+```
+Inside of cmakeLists.txt add 
+```cmake
+install(DIRECTORY 
+  launch 
+  DESTINATION share/${PROJECT_NAME}/
+)
+```
+
+## Launch the launcher
+```bash
+ros2 launch my_robot_bringup number_app.launch.xml
+```
+
+Launch with python
+```bash
+ ros2 launch my_robot_bringup number_app.launch.py 
+```
