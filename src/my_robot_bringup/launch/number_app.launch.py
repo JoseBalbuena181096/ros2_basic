@@ -19,13 +19,15 @@ def generate_launch_description():
         executable='number_publisher',
         #remappings=[('number', 'number_topic')],
         # parameters=[{'number': 1000, 'timer_period': 0.5}]
-        parameters=[param_config]
+        namespace='/test',
+        parameters=[param_config],
     )
 
     number_counter = Node(
         package='my_first_activity_cpp_pkg',
         #remappings=[('number', 'number_topic')],
-        executable='number_counter'
+        executable='number_counter',
+        namespace='/test',
     )
 
     ld.add_action(number_publisher) 

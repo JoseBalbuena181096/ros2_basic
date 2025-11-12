@@ -12,6 +12,9 @@
   <exec_depend>my_first_activity_py_pkg</exec_depend>
   <exec_depend>my_first_activity_cpp_pkg</exec_depend>
 
+   <exec_depend>my_py_pkg</exec_depend>
+  <exec_depend>my_cpp_pkg</exec_depend>
+
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>
 

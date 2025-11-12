@@ -1442,3 +1442,79 @@ Launch with python
 ```bash
  ros2 launch my_robot_bringup number_app.launch.py 
 ```
+
+What is a namespace?
+- A namespace is like a container for nodes, topics, and services.
+- It allows you to group related nodes, topics, and services together.
+- It helps to avoid name conflicts between different parts of your application.
+- You can create namespaces using the --ros-args -r __ns:=/your_namespace
+- You can also create namespaces inside launch files.
+
+
+Namespace example
+```bash
+ros2 run my_first_activity_cpp_pkg number_publisher --ros-args -r __ns:=/test_cpp
+```
+
+```bash
+ros2 run my_first_activity_py_pkg number_publisher --ros-args -r __ns:=/test_py
+```
+
+Add namespace in launch file
+```xml
+<node pkg="my_first_activity_cpp_pkg" exec="number_publisher" name="number_publisher_cpp" output="screen" namespace="/test_cpp">
+</node>
+```
+## Activity 06 - ROS 2 Launch Files
+
+In this activity you will practice by creating a new launch file, with the nodes that you’ve already created during this course.
+
+Goal:
+- Start 5 “robot_news_station” nodes and 1 smartphone node.
+- Each “robot_news_station” will need a different name, and will publish "Hi, this is <robot_name> from the Robot News Station!"
+- The “smartphone” node gets all the messages from all other nodes.
+- Here’s the graph you should get:
+
+
+![alt text](imgs/image_24.png)
+
+So, no need to create or modify any node here. You just need to create a single launch file.
+
+You can start by providing the parameters one by one in the launch file, and then load them from a YAML file.
+
+I’ll see you in the next lecture for the solution.
+
+Bonus point if you find the book/movie reference for all robot names! (shouldn’t be too hard).
+
+## Section Conclusion
+In this section you have discovered Launch Files.
+
+With a launch file, you can start your entire application with only one command line, in one terminal. You can add any number of nodes and fully configure them. That will make your application fully customizable in no time.
+
+![alt text](imgs/image_25.png)
+
+Recap:
+
+Setup for launch files:
+
+Create a new package <robot_name>_bringup (best practice).
+
+Create a launch/ folder at the root of the package.
+
+Configure CMakeLists.txt to install files from this launch/ folder.
+
+Create any number of files you want inside the launch/ folder, ending with .launch.py.
+
+Run a launch file:
+
+After you’ve written your file, use “colcon build” to install the file.
+
+Don’t forget to source your environment
+
+Start the launch file with “ros2 launch <package> <name_of_the_file>
+
+---
+
+Download the complete code for this section (this is the code from all previous sections + the current one).
+
+Now, you have everything you need to create a complete application, and scale it without any problem.

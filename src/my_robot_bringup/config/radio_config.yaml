@@ -1,0 +1,19 @@
+/robot_news_station_giskard:
+  ros__parameters:
+    name: "Giskard"
+
+/robot_news_station_bb8:
+  ros__parameters:
+    name: "BB-8"
+
+/robot_news_station_daneel:
+  ros__parameters:
+    name: "Daneel"
+
+/robot_news_station_jander:
+  ros__parameters:
+    name: "Jander"
+
+/robot_news_station_c3po:
+  ros__parameters:
+    name: "C-3PO"
