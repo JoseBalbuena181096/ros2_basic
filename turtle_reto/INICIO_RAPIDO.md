@@ -3,7 +3,7 @@
 ## ⚡ Ejecutar el Proyecto (1 comando)
 
 ```bash
-cd /home/jose/ros2_ws && ./run_turtlesim_project.sh
+cd /home/jose/ros2_ws/turtle_reto/ && ./run_turtlesim_project.sh
 ```
 
 ## 📋 Lo que verás:
