@@ -7,7 +7,7 @@ int main (){
     pcl::PCLPointCloud2::Ptr cloud (new pcl::PCLPointCloud2 ());
     pcl::PCDReader cloud_reader;
 
-    std::string path = "/home/jose/ros2_ws/src/point_cloud_processing/point_clouds/table_scene.pcd";
+    std::string path = "/home/jose/ros2_ws/src/point_cloud_processing/point_clouds/tb3_world.pcd";
     cloud_reader.read(path, *cloud);
     std::cout << "PointCloud before filtering: " << cloud->width * cloud->height 
               << " data points (" << pcl::getFieldsList (*cloud) << ")." << std::endl;
