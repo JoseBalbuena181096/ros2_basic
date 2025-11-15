@@ -97,3 +97,39 @@ Which search method is used for normal estimation in the code?
 Which of the following best describes the overall purpose of the code?
 - To segment a point cloud into planes and cylinder and save the segmented objects to files
 
+
+## K-dimensional Tree Theory
+KD TREE :
+
+A k-d tree (short for k-dimensional tree) is a space-partitioning data structure used for organizing points in a k-dimensional space. It is commonly used in computer science, robotics, and computational geometry to answer range and nearest neighbor search queries efficiently.
+
+
+
+- Example : 2D Point Cloud
+
+            +---(40, 50)---+
+           /               \
+    (10, 30)               (70, 60)
+   /       \               /       \
+(5, 20)   (20, 40)       (55, 75)   (80, 45)
+ 
+In the provided example, we have a 2D point cloud with the following points: (5, 20), (10, 30), (20, 40), (40, 50), (55, 75), (70, 60), and (80, 45). The k-d tree is a data structure that organizes these points in a way that makes range queries and nearest neighbor searches more efficient compared to a linear search through an unorganized point cloud.
+
+The input data is the original point cloud, which is an unordered set of points. The output is a k-d tree that has organized the points hierarchically by partitioning the space along alternating dimensions. In this 2D example, the tree splits the points along the x-axis and y-axis in alternating levels.
+
+The benefits of processing point cloud data using a k-d tree include:
+
+Efficient nearest neighbor search: Instead of comparing the search point to every point in the point cloud, the k-d tree allows for searching only the relevant partitions of the space. This reduces the number of comparisons required and results in faster search times, especially for large point clouds.
+
+Efficient range queries: If you want to find all points within a certain distance of a search point, using a k-d tree can quickly eliminate large portions of the point cloud that are outside of the search range. This leads to faster range queries compared to searching through the entire point cloud.
+
+Spatial partitioning: The k-d tree provides a hierarchical partitioning of the space, which can be useful for other algorithms that require dividing the space into smaller regions (e.g., clustering, segmentation).
+
+However, it's important to note that k-d trees have some limitations:
+
+Inefficiency in high-dimensional spaces: As the number of dimensions increases, the efficiency of k-d trees for searching decreases. This is known as the "curse of dimensionality." In such cases, alternative data structures or algorithms may be more appropriate.
+
+Dynamic updates: Adding, removing, or modifying points in a k-d tree can be computationally expensive, as it may require rebalancing the tree or even reconstructing it from scratch.
+
+To summarize, k-d trees are a powerful data structure for organizing point cloud data, making range queries and nearest neighbor searches more efficient. However, they have limitations in high-dimensional spaces and when dealing with dynamic updates to the point cloud.
+
